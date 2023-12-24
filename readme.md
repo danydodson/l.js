@@ -1,22 +1,24 @@
 # l.js is another simple/tiny javascript/css loader
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmalko%2Fl.js.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmalko%2Fl.js?ref=badge_shield)
 
+> Modify by Jaeger <JaegerCode@gmail.com>
+
+## Modify log
+- `2016-09-19`:Add `exec` and `execJs` function;
+In order to load the js file and execute js script, 
+but don't insert the js file link into the document header. 
 
 ## features
-- compatible with all ECMASCRIPT 5.1 browsers (Warning for old users this is a breaking change on supporting long time deprecated browsers)
 - parallel script / css loading
 - callback after script loading (css support callback too but are executed imediately)
-- tiny only 2ko uglifyed, less than 1.1ko gziped (at least for latest revision)
+- tiny only 2.1ko uglifyed, less than 1ko gziped (at least for latest revision)
 - may load in order to preserve dependencies
 - support aliases for simpler calling
 - on demand loading
 - only one script tag required
-- clear syntax (to use not in the source code :) )
+- clear syntax
 - successive load of same file will load it once but execute all callbacks associated
 - can dumbly check already inserted tags at load time
 - may use a fallback url on error (only for js files and with error events compatible browsers)
-- may register error handlers (only for js files and with error events compatible browsers)
-- can load javascripts modules
 
 ## examples
 
@@ -24,17 +26,9 @@
 ```html
 <script src="l.js">
 	ljs.load('myLib.js',function(){ /* your callback here */});
+	ljs.exec('myLib.js',function(){ /* your callback here */});
 </script>
 ```
-or using jsdeliver CDN:
-```html
-<script src="https://cdn.jsdelivr.net/gh/malko/l.js@latest/l.min.js">
-	ljs.load('myLib.js',function(){ /* your callback here */});
-</script>
-```
-
-> If you're looking for the npm package, you should search for **@malko/l.js**
-> ```npm install @malko/l.js```
 
 ### loading some scripts in parallel others in order
 ```html
@@ -43,6 +37,11 @@ or using jsdeliver CDN:
 		.load('myLib.js')
 		.load('myRequiredLib.js','myDependentLib.js',function(){ /* your callback here */})
 	;
+	
+	ljs
+    		.load('myLib.js')
+    		.exec('myRequiredLib.js','myDependentLib.js',function(){ /* your callback here */})
+    	;
 </script>
 ```
 second load will be executed in parallel of first load but myDependentLib.js won't load before myRequireLib.js is loaded
@@ -61,7 +60,7 @@ this will load myLib.js and myRequiredLib.js in parrallel and wait for them befo
 	ljs
 		.addAliases({
 			jQuery:'http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js#jqueryId' // <- script tag will have attribute id=jqueryId
-			,ui:[
+			ui:[
 				'jQuery'
 				,'https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js'
 				,'myUITheme.css'
@@ -86,31 +85,5 @@ You can define this fallback url parameter like you define ids. The difference i
 	});
 </script>
 ```
-
-### register an error handler
-```html
-<script src="l.js">
-	ljs
-		.load('missingFile.js',function(){ /* your callback here */})
-		.onError(function(url) {
-			console.log('error loading', url); // <- will print "error loading missingFile.js"
-		})
-	;
-</script>
-```
-
-### load a js module
-As a default l.js load js scripts with their type attribute set to `text/javascript`. To set type to `module` instead, simply prefix the url with `module:`
-
-```html
-<script src="l.js">
-    ljs.load('module:myModuleLib.js',function(){ /* your callback here */});
-</script>
-```
-
 this piece of code is dual licensed under MIT / GPL
 Hope this help, code review, suggestions, bug reports are welcome and appreciated.
-
-
-## License
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmalko%2Fl.js.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmalko%2Fl.js?ref=badge_large)
